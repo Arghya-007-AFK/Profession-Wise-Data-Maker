@@ -3,156 +3,339 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Total Ledger — Weekly Lead Merge</title>
+<title>The One Ledger · Weekly Merge</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2064%2064%22%3E%20%3Cdefs%3E%20%3CradialGradient%20id=%22glow%22%20cx=%2250%25%22%20cy=%2250%25%22%20r=%2250%25%22%3E%20%3Cstop%20offset=%220%25%22%20stop-color=%22%23ff7a18%22%20stop-opacity=%220%22/%3E%20%3Cstop%20offset=%2242%25%22%20stop-color=%22%23ff7a18%22%20stop-opacity=%220%22/%3E%20%3Cstop%20offset=%2262%25%22%20stop-color=%22%23ff7a18%22%20stop-opacity=%22.4%22/%3E%20%3Cstop%20offset=%2282%25%22%20stop-color=%22%23ff7a18%22%20stop-opacity=%22.16%22/%3E%20%3Cstop%20offset=%22100%25%22%20stop-color=%22%23ff7a18%22%20stop-opacity=%220%22/%3E%20%3C/radialGradient%3E%20%3ClinearGradient%20id=%22gold%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%20%3Cstop%20offset=%220%25%22%20stop-color=%22%238a6a2a%22/%3E%20%3Cstop%20offset=%2234%25%22%20stop-color=%22%23f0c96a%22/%3E%20%3Cstop%20offset=%2250%25%22%20stop-color=%22%23fff3cf%22/%3E%20%3Cstop%20offset=%2268%25%22%20stop-color=%22%23d7a94b%22/%3E%20%3Cstop%20offset=%22100%25%22%20stop-color=%22%237a5a22%22/%3E%20%3C/linearGradient%3E%20%3C/defs%3E%20%3Ccircle%20cx=%2232%22%20cy=%2232%22%20r=%2230%22%20fill=%22url(%23glow)%22/%3E%20%3Ccircle%20cx=%2232%22%20cy=%2232%22%20r=%2219%22%20fill=%22none%22%20stroke=%22%232a1c08%22%20stroke-width=%2213%22%20opacity=%22.9%22/%3E%20%3Ccircle%20cx=%2232%22%20cy=%2232%22%20r=%2219%22%20fill=%22none%22%20stroke=%22url(%23gold)%22%20stroke-width=%2210.5%22/%3E%20%3Ccircle%20cx=%2232%22%20cy=%2232%22%20r=%2224.6%22%20fill=%22none%22%20stroke=%22%23fff3cf%22%20stroke-width=%22.9%22%20opacity=%22.5%22/%3E%20%3Ccircle%20cx=%2232%22%20cy=%2232%22%20r=%2213.4%22%20fill=%22none%22%20stroke=%22%232a1c08%22%20stroke-width=%221%22/%3E%20%3Cpath%20d=%22M%2017.5,24%20A%2017,17%200%200%201%2026,16.6%22%20fill=%22none%22%20stroke=%22%23ffffff%22%20stroke-width=%221.6%22%20opacity=%22.65%22%20stroke-linecap=%22round%22/%3E%20%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Rye&family=Bitter:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   :root{
-    --leather:#191008; --leather2:#241709; --parch:#ecdcb6; --parch2:#e2cfa2;
-    --ink:#2b1c10; --red:#8f2318; --red2:#b3402f; --gold:#c9a227; --faded:#8a7454;
-    --ok:#3f6d3a;
+    --void:#060509; --deep:#0d0a10; --bronze:#171009;
+    --gold:#d7a94b; --gold-hi:#f0c96a; --gold-dim:rgba(215,169,75,.34);
+    --ember:#ff7a18; --doom:#b3341c;
+    --moon:#9fd8ff; --moon-dim:rgba(159,216,255,.38);
+    --ink:#e9dcc0; --ink-dim:rgba(233,220,192,.5); --ink-faint:rgba(233,220,192,.28);
+    --vilya:#4aa3ff; --narya:#ff4d3d; --nenya:#eef7ff;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
   body{
-    min-height:100vh; font-family:'Bitter',Georgia,serif; color:var(--parch);
     background:
-      radial-gradient(1200px 600px at 50% -10%, rgba(201,162,39,.10), transparent 60%),
-      repeating-linear-gradient(45deg, rgba(0,0,0,.18) 0 2px, transparent 2px 6px),
-      linear-gradient(180deg, var(--leather2), var(--leather) 45%);
-    display:flex; flex-direction:column; align-items:center; padding:34px 16px 60px;
+      radial-gradient(1200px 500px at 50% -8%, rgba(255,122,24,.07), transparent 62%),
+      radial-gradient(900px 700px at 50% 118%, rgba(179,52,28,.16), transparent 60%),
+      linear-gradient(180deg, var(--void), var(--deep) 55%, #0a0608);
+    color:var(--ink);
+    font-family:"Cormorant Garamond", Georgia, serif;
+    min-height:100%; overflow-x:hidden;
+    text-align:center;
   }
-  .star{color:var(--gold); letter-spacing:.4em; font-size:13px; margin-bottom:6px;}
-  h1{
-    font-family:'Rye',serif; font-weight:400; font-size:clamp(30px,5.5vw,54px);
-    color:var(--parch); text-shadow:0 3px 0 rgba(0,0,0,.55); letter-spacing:.04em;
+  ::selection{background:rgba(215,169,75,.35);}
+
+  /* ambient layers */
+  #embers{position:fixed; inset:0; z-index:1; pointer-events:none;}
+  #mapLayer{position:fixed; inset:-6%; z-index:0; pointer-events:none; opacity:.5;
+    transition:transform .6s cubic-bezier(.2,.6,.2,1); will-change:transform;}
+  .mist{position:fixed; left:-30%; width:160%; height:34vh; z-index:1; pointer-events:none;
+    background:radial-gradient(60% 100% at 50% 100%, rgba(159,216,255,.045), transparent 70%);
+    bottom:-6vh; animation:mistDrift 46s linear infinite alternate;}
+  .mist.two{bottom:6vh; opacity:.6; animation-duration:67s; animation-direction:alternate-reverse;}
+  @keyframes mistDrift{from{transform:translateX(-4%);}to{transform:translateX(4%);}}
+
+  main{position:relative; z-index:3; max-width:1060px; margin:0 auto; padding:34px 22px 90px;}
+
+  /* ——— the Eye ——— */
+  #eyeWrap{width:150px; height:96px; margin:0 auto 6px; filter:drop-shadow(0 0 26px rgba(255,122,24,.45));}
+  #eyeWrap svg{width:100%; height:100%; overflow:visible;}
+  .flame{animation:flicker 2.7s ease-in-out infinite;}
+  .flame.f2{animation-duration:1.9s; animation-delay:-.7s;}
+  @keyframes flicker{0%,100%{transform:scaleY(1) scaleX(1);}30%{transform:scaleY(1.06) scaleX(.985);}55%{transform:scaleY(.96) scaleX(1.02);}80%{transform:scaleY(1.04) scaleX(.99);}}
+  #pupilG{transition:transform .14s linear;}
+
+  h1{font-family:Cinzel, serif; font-weight:900; letter-spacing:.16em; font-size:clamp(30px,5vw,52px);
+    background:linear-gradient(100deg, #8a6a2a 0%, var(--gold-hi) 28%, #fff3cf 42%, var(--gold-hi) 55%, #8a6a2a 100%);
+    background-size:220% 100%;
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    animation:sheen 7s ease-in-out infinite;}
+  @keyframes sheen{0%,100%{background-position:0% 0;}50%{background-position:100% 0;}}
+  .verse{font-style:italic; font-size:18px; color:var(--ink-dim); letter-spacing:.05em; margin-top:6px;}
+  .verse b{color:var(--gold); font-weight:500;}
+
+  /* ——— Doors of Durin (drop gate) ——— */
+  #gate{position:relative; margin:30px auto 8px; max-width:640px; cursor:pointer; outline:none;}
+  #gate svg{width:100%; height:auto; display:block;}
+  #gate .door{transition:transform .8s cubic-bezier(.6,0,.3,1);}
+  #gate .glow{transition:opacity .5s;}
+  #gate .gateStroke{stroke:var(--moon); transition:filter .5s, opacity .5s; opacity:.62;}
+  #gate:hover .gateStroke, #gate.over .gateStroke, #gate:focus-visible .gateStroke{opacity:1;
+    filter:drop-shadow(0 0 7px rgba(159,216,255,.85));}
+  #gate.over .door.left{transform:translateX(-4.5%);}
+  #gate.over .door.right{transform:translateX(4.5%);}
+  #gate.over .glow{opacity:1;}
+  .gateText{position:absolute; inset:auto 0 15%; pointer-events:none;}
+  .gateText .big{font-family:Cinzel, serif; letter-spacing:.2em; font-size:15px; color:var(--moon);
+    text-shadow:0 0 14px rgba(159,216,255,.5);}
+  .gateText .small{font-size:16.5px; font-style:italic; color:var(--ink-dim); margin-top:7px; line-height:1.5;}
+  #fileInput{display:none;}
+
+  /* ——— the Three Rings (slots) ——— */
+  .slots{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin:26px auto 0; max-width:900px;}
+  .slot{border:1px solid rgba(215,169,75,.16); border-radius:10px; padding:16px 14px 13px;
+    background:linear-gradient(180deg, rgba(23,16,9,.75), rgba(10,7,5,.75));
+    position:relative; transition:border-color .4s, box-shadow .4s;}
+  .slot.filled{border-color:var(--gold-dim); box-shadow:0 0 22px rgba(215,169,75,.12), inset 0 0 30px rgba(215,169,75,.05);}
+  .slot svg{width:58px; height:58px; margin-bottom:6px;}
+  .gem{opacity:.35; transition:opacity .4s;}
+  .slot.filled .gem{opacity:1; animation:gemPulse 2.6s ease-in-out infinite;}
+  @keyframes gemPulse{0%,100%{filter:drop-shadow(0 0 3px currentColor);}50%{filter:drop-shadow(0 0 11px currentColor);}}
+  .ringName{font-family:Cinzel, serif; font-size:13px; letter-spacing:.24em; color:var(--gold);}
+  .role{font-size:16px; font-style:italic; color:var(--ink-dim); margin:2px 0 8px;}
+  .file{font-size:15px; color:var(--ink); word-break:break-all; min-height:20px; line-height:1.35;}
+  .meta{font-size:14.5px; font-style:italic; color:var(--moon-dim); min-height:19px; margin-top:3px; line-height:1.4;}
+  .slot .clear{display:none; margin-top:9px; background:none; border:1px solid rgba(233,220,192,.22);
+    color:var(--ink-dim); font-family:Cinzel,serif; font-size:10.5px; letter-spacing:.18em;
+    padding:4px 12px; border-radius:5px; cursor:pointer; transition:.3s;}
+  .slot .clear:hover{border-color:var(--doom); color:#ff9a86;}
+  .slot.filled .clear{display:inline-block;}
+
+  #swap{margin:14px auto 0; display:inline-block; background:none; border:none; color:var(--ink-faint);
+    font-family:"Cormorant Garamond",serif; font-style:italic; font-size:15.5px; cursor:pointer; letter-spacing:.04em;}
+  #swap:hover{color:var(--gold);}
+
+  /* ——— the One Ring (forge) ——— */
+  #forge{margin:34px auto 0; position:relative; height:322px;}
+  #ringWrap{position:absolute; left:50%; top:0; transform:translateX(-50%); width:250px; height:250px;
+    will-change:transform, opacity;}
+  #ringBtn{all:unset; cursor:pointer; display:block; width:100%; height:100%; border-radius:50%;}
+  #ringBtn:focus-visible{outline:2px solid var(--gold); outline-offset:8px;}
+  #ringBtn[disabled]{cursor:not-allowed;}
+  #ringBtn svg{width:100%; height:100%; overflow:visible;}
+  .ringBody{transition:filter .6s, opacity .6s;}
+  #ringBtn[disabled] .ringBody{filter:grayscale(.85) brightness(.55); opacity:.55;}
+  #ringBtn:not([disabled]) .ringBody{filter:drop-shadow(0 0 18px rgba(240,201,106,.5));}
+  #inscription{opacity:0; transition:opacity .9s; transform-origin:125px 125px; transform-box:view-box; animation:spin 40s linear infinite;}
+  #inscription text{filter:drop-shadow(0 0 4px rgba(255,140,40,1)) drop-shadow(0 0 10px rgba(255,122,24,.6));}
+  #ringBtn:not([disabled]) #inscription{opacity:.75;}
+  #ringBtn:not([disabled]):hover #inscription{opacity:1;}
+  #ringBtn:not([disabled]):hover .ringBody{filter:drop-shadow(0 0 30px rgba(255,140,40,.75));}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  #forgeCap{position:absolute; left:0; right:0; top:258px;}
+  #forgeCap .cta{font-family:Cinzel,serif; font-weight:700; letter-spacing:.3em; font-size:15px; color:var(--gold-hi);}
+  #forgeCap .hint{font-size:15px; font-style:italic; color:var(--ink-faint); margin-top:4px;}
+  body.disabledForge #forgeCap .cta{color:rgba(233,220,192,.3);}
+
+  /* forging sequence */
+  body.casting #ringWrap{animation:ringFall 1.35s cubic-bezier(.5,-.1,.85,.4) forwards;}
+  @keyframes ringFall{
+    0%{transform:translateX(-50%) translateY(0) scale(1) rotate(0deg);}
+    100%{transform:translateX(-50%) translateY(78vh) scale(.18) rotate(160deg); opacity:.95;}
   }
-  .sub{color:var(--faded); margin-top:6px; font-size:14px; letter-spacing:.14em; text-transform:uppercase;}
-  .rope{width:min(560px,80vw); height:2px; margin:22px 0 26px;
-    background:repeating-linear-gradient(90deg, var(--gold) 0 8px, transparent 8px 14px); opacity:.55;}
+  #lava{position:fixed; left:0; right:0; bottom:-14vh; height:42vh; z-index:2; pointer-events:none; opacity:0;
+    background:radial-gradient(58% 90% at 50% 100%, rgba(255,122,24,.85), rgba(179,52,28,.5) 45%, transparent 72%);
+    transition:opacity .8s;}
+  body.casting #lava, body.done #lava{opacity:.34;}
+  body.casting #lava{animation:lavaFlare 1.9s ease-in .9s;}
+  @keyframes lavaFlare{0%{opacity:.34;}42%{opacity:1;}100%{opacity:.34;}}
+  #flash{position:fixed; inset:0; z-index:8; pointer-events:none; background:rgba(255,140,40,.5); opacity:0;}
+  body.casting #flash{animation:flash 1s ease-out 1.25s;}
+  @keyframes flash{0%{opacity:0;}18%{opacity:.55;}100%{opacity:0;}}
 
-  .board{width:min(980px,100%);}
+  #status{margin-top:10px; min-height:26px; font-size:17px; font-style:italic; color:var(--ink-dim); letter-spacing:.03em;}
+  #status.err{color:var(--moon); text-shadow:0 0 12px rgba(159,216,255,.55);}
+  #status.ok{color:var(--gold-hi);}
 
-  /* Drop zone */
-  #drop{
-    border:2px dashed rgba(236,220,182,.45); border-radius:10px; padding:34px 20px;
-    text-align:center; cursor:pointer; transition:.18s;
-    background:rgba(0,0,0,.25);
+  /* ——— the tome (summary) ——— */
+  #tomeBack{position:fixed; inset:0; z-index:9; background:rgba(4,3,6,.72); backdrop-filter:blur(2px);
+    visibility:hidden; opacity:0; transition:opacity .7s, visibility 0s .7s;}
+  #tome{position:fixed; z-index:10; left:50%; top:50%; width:min(92vw,470px);
+    transform:translate(-50%,-44%) scale(.96); opacity:0; visibility:hidden;
+    transition:opacity .8s, transform .8s cubic-bezier(.2,.7,.2,1), visibility 0s .8s;
+    background:linear-gradient(180deg,#191207,#100a06);
+    border:1px solid var(--gold-dim); border-radius:12px; padding:30px 30px 24px;
+    box-shadow:0 0 60px rgba(255,122,24,.18), inset 0 0 50px rgba(215,169,75,.05);}
+  body.done #tomeBack{visibility:visible; opacity:1; transition:opacity .7s;}
+  body.done #tome{visibility:visible; opacity:1; transform:translate(-50%,-50%) scale(1); transition:opacity .8s, transform .8s cubic-bezier(.2,.7,.2,1);}
+  #tome h2{font-family:Cinzel,serif; font-weight:700; letter-spacing:.3em; font-size:21px; color:var(--gold-hi);
+    text-shadow:0 0 20px rgba(240,201,106,.35);}
+  #tome .fname{font-size:15px; font-style:italic; color:var(--ink-faint); margin:7px 0 15px;}
+  #tome table{width:100%; border-collapse:collapse; font-size:17px;}
+  #tome td{padding:5.5px 4px; border-bottom:1px solid rgba(215,169,75,.13); text-align:left;}
+  #tome td.num{text-align:right; font-variant-numeric:tabular-nums; color:var(--gold-hi);}
+  #tome tr.total td{border-bottom:none; border-top:1px solid var(--gold-dim); font-weight:600;
+    font-family:Cinzel,serif; font-size:14px; letter-spacing:.12em; padding-top:9px;}
+  #dupeLine{font-size:15px; font-style:italic; color:var(--ink-dim); margin-top:13px; line-height:1.55;}
+  #again{margin-top:18px; background:none; border:1px solid var(--gold-dim); color:var(--gold);
+    font-family:Cinzel,serif; letter-spacing:.24em; font-size:12px; padding:9px 22px; border-radius:6px;
+    cursor:pointer; transition:.3s;}
+  #again:hover{background:rgba(215,169,75,.1); box-shadow:0 0 16px rgba(215,169,75,.25);}
+
+  footer{margin-top:60px; position:relative; z-index:3; font-style:italic; font-size:14.5px; color:var(--ink-faint); letter-spacing:.06em; padding-bottom:30px;}
+
+  @media (max-width:760px){
+    .slots{grid-template-columns:1fr; max-width:420px;}
+    #eyeWrap{width:120px; height:78px;}
   }
-  #drop:hover, #drop.over{border-color:var(--gold); background:rgba(201,162,39,.07);}
-  #drop .big{font-size:19px; font-weight:600;}
-  #drop .small{color:var(--faded); font-size:13px; margin-top:6px;}
-  input[type=file]{display:none;}
-
-  /* Slots */
-  .slots{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; margin-top:18px;}
-  .slot{
-    background:linear-gradient(180deg,var(--parch),var(--parch2)); color:var(--ink);
-    border-radius:8px; padding:14px 16px; position:relative;
-    box-shadow:0 4px 0 rgba(0,0,0,.45), inset 0 0 0 1px rgba(43,28,16,.25);
-    border-top:5px solid var(--red);
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation-duration:.001s !important; animation-iteration-count:1 !important; transition-duration:.001s !important;}
+    #embers{display:none;}
   }
-  .slot h3{font-size:13px; text-transform:uppercase; letter-spacing:.12em; color:var(--red);}
-  .slot .want{font-size:12px; color:#6d5232; margin-top:2px;}
-  .slot .file{margin-top:10px; font-size:13.5px; font-weight:700; word-break:break-all; min-height:20px;}
-  .slot .meta{font-size:12.5px; color:#6d5232; margin-top:3px; min-height:16px;}
-  .slot.filled{border-top-color:var(--ok);}
-  .slot.filled::after{content:"✔"; position:absolute; top:10px; right:12px; color:var(--ok); font-size:18px; font-weight:700;}
-  .slot .clear{position:absolute; bottom:10px; right:12px; background:none; border:none; color:#8a5a2b;
-    font-family:inherit; font-size:11.5px; cursor:pointer; text-decoration:underline; display:none;}
-  .slot.filled .clear{display:block;}
-
-  .swaprow{margin-top:10px; text-align:center;}
-  #swap{background:none; border:1px solid rgba(236,220,182,.35); color:var(--parch);
-    font-family:'Bitter',serif; font-size:12.5px; padding:6px 14px; border-radius:6px; cursor:pointer;}
-  #swap:hover{border-color:var(--gold); color:var(--gold);}
-
-  /* Action */
-  .actions{margin-top:26px; text-align:center;}
-  #go{
-    font-family:'Rye',serif; font-size:20px; letter-spacing:.06em; color:var(--parch);
-    background:linear-gradient(180deg,var(--red2),var(--red)); border:none; border-radius:8px;
-    padding:15px 42px; cursor:pointer; box-shadow:0 5px 0 #4d1009, 0 8px 18px rgba(0,0,0,.5);
-    transition:.15s;
-  }
-  #go:hover:not(:disabled){transform:translateY(-2px); box-shadow:0 7px 0 #4d1009, 0 12px 22px rgba(0,0,0,.55);}
-  #go:active:not(:disabled){transform:translateY(2px); box-shadow:0 2px 0 #4d1009;}
-  #go:disabled{opacity:.4; cursor:not-allowed; filter:grayscale(.4);}
-  #status{margin-top:12px; font-size:13.5px; color:var(--faded); min-height:18px;}
-  #status.err{color:#e08070;}
-  #status.ok{color:#9dc08b;}
-
-  /* Summary */
-  #summary{display:none; margin-top:30px; background:linear-gradient(180deg,var(--parch),var(--parch2));
-    color:var(--ink); border-radius:8px; padding:22px 24px;
-    box-shadow:0 4px 0 rgba(0,0,0,.45), inset 0 0 0 1px rgba(43,28,16,.25);}
-  #summary h2{font-family:'Rye',serif; font-weight:400; color:var(--red); font-size:22px; text-align:center;}
-  #summary .tag{text-align:center; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:#6d5232; margin:2px 0 14px;}
-  table{width:100%; border-collapse:collapse; font-size:14px;}
-  th,td{padding:7px 10px; border-bottom:1px dashed rgba(43,28,16,.3); text-align:left;}
-  th{font-size:11.5px; text-transform:uppercase; letter-spacing:.1em; color:#6d5232;}
-  td.num{text-align:right; font-variant-numeric:tabular-nums; font-weight:700;}
-  tr.total td{border-bottom:none; border-top:2px solid var(--ink); font-weight:700;}
-  .dupes{margin-top:12px; font-size:13px; color:#6d5232; text-align:center;}
-  #again{display:block; margin:16px auto 0; background:none; border:1px solid var(--red);
-    color:var(--red); font-family:'Bitter',serif; font-size:13px; padding:7px 18px; border-radius:6px; cursor:pointer;}
-  #again:hover{background:var(--red); color:var(--parch);}
-  footer{margin-top:34px; color:rgba(236,220,182,.35); font-size:11.5px; letter-spacing:.1em;}
 </style>
 </head>
-<body>
-  <div class="star">★ ★ ★</div>
-  <h1>TOTAL LEDGER</h1>
-  <div class="sub">Main · BT Paid · Exotic · Bootcamp — Weekly Merge</div>
-  <div class="rope"></div>
+<body class="disabledForge">
 
-  <div class="board">
-    <div id="drop">
-      <div class="big">Drop all three files here</div>
-      <div class="small">Main paid CSV · Bootcamp Paid CSV · Exotic-sorted workbook (.xlsx) — together or one by one. Click to browse.</div>
-      <input type="file" id="fileInput" multiple accept=".csv,.xlsx,.xls">
-    </div>
+<canvas id="embers"></canvas>
+<svg id="mapLayer" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <g fill="none" stroke="rgba(215,169,75,.075)" stroke-width="1.1">
+    <path d="M-20,610 C140,560 210,600 330,545 S560,590 700,520 S950,565 1230,490"/>
+    <path d="M-20,660 C160,620 260,655 400,600 S640,650 800,585 S1020,620 1230,560"/>
+    <path d="M60,120 l38,-52 38,52 M136,132 l30,-42 30,42 M96,150 l26,-36 26,36"/>
+    <path d="M880,150 l42,-58 42,58 M965,166 l32,-46 32,46 M830,170 l28,-40 28,40"/>
+    <path d="M300,300 C380,270 470,320 540,290 M700,360 C780,330 860,380 940,350"/>
+    <circle cx="1010" cy="250" r="34"/><circle cx="1010" cy="250" r="4"/>
+  </g>
+  <g fill="none" stroke="rgba(159,216,255,.06)" stroke-width="1" stroke-dasharray="2 7">
+    <path d="M170,700 C330,620 420,660 560,560 S760,470 900,300"/>
+  </g>
+</svg>
+<div class="mist"></div><div class="mist two"></div>
+<div id="lava"></div><div id="flash"></div>
 
-    <div class="slots">
-      <div class="slot" id="slot-main">
-        <h3>1 · Main Paid</h3><div class="want">.csv — main workshop payments</div>
-        <div class="file"></div><div class="meta"></div>
-        <button class="clear" data-slot="main">remove</button>
-      </div>
-      <div class="slot" id="slot-bt">
-        <h3>2 · Bootcamp Paid</h3><div class="want">.csv — bootcamp payments</div>
-        <div class="file"></div><div class="meta"></div>
-        <button class="clear" data-slot="bt">remove</button>
-      </div>
-      <div class="slot" id="slot-ex">
-        <h3>3 · Exotic Sorted</h3><div class="want">.xlsx — sheets: Exotic + Bootcamp</div>
-        <div class="file"></div><div class="meta"></div>
-        <button class="clear" data-slot="ex">remove</button>
-      </div>
-    </div>
-    <div class="swaprow"><button id="swap">⇄ swap the two CSVs</button></div>
-
-    <div class="actions">
-      <button id="go" disabled>Merge &amp; Download</button>
-      <div id="status"></div>
-    </div>
-
-    <div id="summary">
-      <h2>Ledger Closed</h2>
-      <div class="tag">Total_Sorted_Data_File — downloaded</div>
-      <table>
-        <thead><tr><th>Sheet</th><th style="text-align:right">Rows</th></tr></thead>
-        <tbody id="sumRows"></tbody>
-      </table>
-      <div class="dupes" id="dupeLine"></div>
-      <button id="again">Run another week</button>
-    </div>
+<main>
+  <div id="eyeWrap" aria-hidden="true">
+    <svg viewBox="0 0 200 130">
+      <defs>
+        <radialGradient id="irisG" cx="50%" cy="50%" r="60%">
+          <stop offset="0%" stop-color="#ffd98a"/><stop offset="42%" stop-color="#ff8a1e"/>
+          <stop offset="78%" stop-color="#b3341c"/><stop offset="100%" stop-color="#4d0e05"/>
+        </radialGradient>
+        <filter id="blur1"><feGaussianBlur stdDeviation="4"/></filter>
+      </defs>
+      <g class="flame" style="transform-origin:100px 65px">
+        <path filter="url(#blur1)" fill="rgba(255,122,24,.4)"
+          d="M12,65 C40,18 76,2 100,2 C124,2 160,18 188,65 C160,112 124,128 100,128 C76,128 40,112 12,65 Z"/>
+      </g>
+      <g class="flame f2" style="transform-origin:100px 65px">
+        <path fill="url(#irisG)"
+          d="M22,65 C48,26 80,12 100,12 C120,12 152,26 178,65 C152,104 120,118 100,118 C80,118 48,104 22,65 Z"/>
+      </g>
+      <g id="pupilG" style="transform-origin:100px 65px">
+        <ellipse cx="100" cy="65" rx="8.5" ry="30" fill="#0b0304"/>
+        <ellipse cx="100" cy="65" rx="3.2" ry="20" fill="#000"/>
+      </g>
+    </svg>
   </div>
 
-  <footer>HOET · lead ops · runs fully in your browser — no data leaves this page</footer>
+  <h1>THE ONE LEDGER</h1>
+  <div class="verse">Three exports to rule the week &middot; <b>one Ledger to bind them</b></div>
+
+  <div id="gate" role="button" tabindex="0" aria-label="Drop the three exports here, or press to browse">
+    <svg viewBox="0 0 640 430" aria-hidden="true">
+      <defs><filter id="soft"><feGaussianBlur stdDeviation="1.1"/></filter></defs>
+      <ellipse class="glow" cx="320" cy="212" rx="250" ry="180" fill="rgba(159,216,255,.06)" opacity="0" filter="url(#soft)"/>
+      <g class="gateStroke" fill="none" stroke-width="2">
+        <path d="M120,410 L120,235 C120,110 210,45 320,45 C430,45 520,110 520,235 L520,410"/>
+        <path d="M140,410 L140,240 C140,124 218,64 320,64 C422,64 500,124 500,240 L500,410" stroke-width="1.1" opacity=".55"/>
+        <g class="door left">
+          <path d="M320,410 L162,410 L162,246 C162,140 230,82 320,82"/>
+          <path d="M320,140 C258,140 214,182 214,252 L214,410" stroke-width="1" opacity=".4"/>
+        </g>
+        <g class="door right">
+          <path d="M320,410 L478,410 L478,246 C478,140 410,82 320,82"/>
+          <path d="M320,140 C382,140 426,182 426,252 L426,410" stroke-width="1" opacity=".4"/>
+        </g>
+        <line x1="320" y1="82" x2="320" y2="410" stroke-width="1.2" opacity=".7"/>
+        <path d="M180,410 C180,330 176,240 152,196 M460,410 C460,330 464,240 488,196" stroke-width="1.3" opacity=".6"/>
+        <path d="M152,196 c-10,-22 8,-34 22,-24 M488,196 c10,-22 -8,-34 -22,-24" stroke-width="1.3" opacity=".6"/>
+      </g>
+      <g class="gateStroke" stroke-width="1.6" fill="none">
+        <path d="M320,96 l6.5,13 14.5,2.2 -10.5,10.3 2.5,14.5 -13,-6.9 -13,6.9 2.5,-14.5 -10.5,-10.3 14.5,-2.2 Z" fill="rgba(159,216,255,.14)"/>
+        <circle cx="268" cy="122" r="2.6"/><circle cx="372" cy="122" r="2.6"/>
+        <circle cx="238" cy="152" r="2.2"/><circle cx="402" cy="152" r="2.2"/>
+        <circle cx="292" cy="106" r="2"/><circle cx="348" cy="106" r="2"/>
+      </g>
+      <path id="archPath" d="M150,262 C160,140 232,76 320,76 C408,76 480,140 490,262" fill="none"/>
+      <text class="gateStroke" font-family="Cinzel, serif" font-size="17" letter-spacing="7" fill="var(--moon)" stroke="none">
+        <textPath href="#archPath" startOffset="50%" text-anchor="middle">SPEAK FRIEND AND ENTER</textPath>
+      </text>
+    </svg>
+    <div class="gateText">
+      <div class="big">DROP THE THREE EXPORTS</div>
+      <div class="small">raw or sorted, the gate knows them apart &middot; main paid &middot; bootcamp paid &middot; lead export<br>or press to browse</div>
+    </div>
+    <input type="file" id="fileInput" multiple accept=".csv,.xlsx,.xls">
+  </div>
+
+  <div class="slots">
+    <div class="slot" id="slot-main">
+      <svg viewBox="0 0 60 60"><circle cx="30" cy="32" r="17" fill="none" stroke="#cfd6e4" stroke-width="5" opacity=".85"/><path d="M 17,25 A 17,17 0 0 1 30,15" fill="none" stroke="#fff" stroke-width="1.6" opacity=".55" stroke-linecap="round"/><circle class="gem" cx="30" cy="13.5" r="5.5" fill="#4aa3ff" style="color:#4aa3ff"/></svg>
+      <div class="ringName">VILYA</div>
+      <div class="role">Main paid report</div>
+      <div class="file"></div><div class="meta"></div>
+      <button class="clear" data-slot="main">RELEASE</button>
+    </div>
+    <div class="slot" id="slot-bt">
+      <svg viewBox="0 0 60 60"><circle cx="30" cy="32" r="17" fill="none" stroke="#e0b05c" stroke-width="5" opacity=".85"/><path d="M 17,25 A 17,17 0 0 1 30,15" fill="none" stroke="#fff" stroke-width="1.6" opacity=".55" stroke-linecap="round"/><circle class="gem" cx="30" cy="13.5" r="5.5" fill="#ff4d3d" style="color:#ff4d3d"/></svg>
+      <div class="ringName">NARYA</div>
+      <div class="role">Bootcamp paid report</div>
+      <div class="file"></div><div class="meta"></div>
+      <button class="clear" data-slot="bt">RELEASE</button>
+    </div>
+    <div class="slot" id="slot-ex">
+      <svg viewBox="0 0 60 60"><circle cx="30" cy="32" r="17" fill="none" stroke="#dfe9f2" stroke-width="5" opacity=".85"/><path d="M 17,25 A 17,17 0 0 1 30,15" fill="none" stroke="#fff" stroke-width="1.6" opacity=".55" stroke-linecap="round"/><circle class="gem" cx="30" cy="13.5" r="5.5" fill="#eef7ff" style="color:#bfe6ff"/></svg>
+      <div class="ringName">NENYA</div>
+      <div class="role">Lead export</div>
+      <div class="file"></div><div class="meta"></div>
+      <button class="clear" data-slot="ex">RELEASE</button>
+    </div>
+  </div>
+  <button id="swap">&#8646; swap the two paid reports</button>
+
+  <div id="forge">
+    <div id="ringWrap">
+      <button id="ringBtn" disabled aria-label="Forge the One Ledger: merge and download">
+        <svg viewBox="0 0 250 250">
+          <defs>
+            <linearGradient id="goldG" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#8a6a2a"/><stop offset="35%" stop-color="#f0c96a"/>
+              <stop offset="52%" stop-color="#fff3cf"/><stop offset="70%" stop-color="#d7a94b"/>
+              <stop offset="100%" stop-color="#7a5a22"/>
+            </linearGradient>
+            <path id="inscPath" d="M125,125 m-98,0 a98,98 0 1,1 196,0 a98,98 0 1,1 -196,0"/>
+          </defs>
+          <g class="ringBody">
+            <circle cx="125" cy="125" r="78" fill="none" stroke="#3a2a10" stroke-width="30" opacity=".9"/>
+            <circle cx="125" cy="125" r="78" fill="none" stroke="url(#goldG)" stroke-width="24"/>
+            <circle cx="125" cy="125" r="89.5" fill="none" stroke="rgba(255,243,207,.5)" stroke-width="1.2"/>
+            <circle cx="125" cy="125" r="66.5" fill="none" stroke="rgba(58,42,16,.9)" stroke-width="1.4"/>
+          </g>
+          <g id="inscription" fill="#ff7a18">
+            <text font-family="Cormorant Garamond, serif" font-style="italic" font-size="14.5" letter-spacing="3.5">
+              <textPath href="#inscPath">ash nazg durbatul&#251;k &#183; ash nazg gimbatul &#183; ash nazg thrakatul&#251;k &#183; agh burzum-ishi krimpatul &#183;</textPath>
+            </text>
+          </g>
+        </svg>
+      </button>
+    </div>
+    <div id="forgeCap">
+      <div class="cta">FORGE THE ONE LEDGER</div>
+      <div class="hint">merges the three &amp; downloads the final workbook</div>
+      <div id="status"></div>
+    </div>
+  </div>
+</main>
+
+<div id="tomeBack"></div>
+<div id="tome" role="dialog" aria-label="Merge complete">
+  <h2>IT IS DONE</h2>
+  <div class="fname">Total_Sorted_Data_File__Main__BT_Paid__Exotic__Bootcamp__Merged.xlsx &middot; downloaded</div>
+  <table><tbody id="sumRows"></tbody></table>
+  <div id="dupeLine"></div>
+  <button id="again">BEGIN ANEW</button>
+</div>
+
+<footer>Not all those who wander are lost &middot; HOET lead ops</footer>
 
 <script>
-/* ===================== CORE MERGE LOGIC (verified against reference output) ===================== */
 (function (root, factory) {
   if (typeof module !== "undefined" && module.exports) module.exports = factory();
   else root.MergeCore = factory();
@@ -298,10 +481,148 @@
   return { merge, toWorkbook, OUT_HEADERS, parseDMY, dayLabel };
 });
 
+/* Raw-input transformers: raw exports → sorted-equivalent AOAs feeding the existing merge */
+(function (root, factory) {
+  if (typeof module !== "undefined" && module.exports) module.exports = factory();
+  else root.RawCore = factory();
+})(typeof self !== "undefined" ? self : this, function () {
+  const ITU = ("1 7 20 27 30 31 32 33 34 36 39 40 41 43 44 45 46 47 48 49 51 52 53 54 55 56 57 58 60 61 62 63 64 65 66 " +
+    "81 82 84 86 90 91 92 93 94 95 98 211 212 213 216 218 220 221 222 223 224 225 226 227 228 229 230 231 232 233 234 235 " +
+    "236 237 238 239 240 241 242 243 244 245 246 248 249 250 251 252 253 254 255 256 257 258 260 261 262 263 264 265 266 " +
+    "267 268 269 290 291 297 298 299 350 351 352 353 354 355 356 357 358 359 370 371 372 373 374 375 376 377 378 380 381 " +
+    "382 383 385 386 387 389 420 421 423 500 501 502 503 504 505 506 507 508 509 590 591 592 593 594 595 596 597 598 599 " +
+    "670 672 673 674 675 676 677 678 679 680 681 682 683 685 686 687 688 689 690 691 692 850 852 853 855 856 880 886 960 " +
+    "961 962 963 964 965 966 967 968 970 971 972 973 974 975 976 977 992 993 994 995 996 998").split(" ");
+  const CCS = new Set(ITU);
+  const DOW = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const KEEP = ["ai-tools","ai-bootcamp","ai-claude","py"];
+  const PLATFORM_ALIAS = { "big-basket":"Bigbasket", "gpay":"Googlepay", "1mg":"1Mg" };
+
+  const norm = v => (v === null || v === undefined) ? "" : String(v).trim();
+  const digitsOf = v => norm(v).replace(/\D/g, "");
+
+  // Paid exports: longest-prefix country code, remainder kept whole
+  function parsePaid(rawp) {
+    const d = digitsOf(rawp);
+    if (d.length <= 10) return [d, "91", d];
+    for (const L of [3, 2, 1]) {
+      const p = d.slice(0, L);
+      if (CCS.has(p) && d.length - L >= 7) return [d, p, d.slice(L)];
+    }
+    return [d, "91", d.slice(-10)];
+  }
+  // Lead exports: Indian-number priority — junk foreign prefixes on 91-numbers stripped
+  function parseLead(rawp) {
+    const d = digitsOf(rawp);
+    if (d.length <= 10) return [d, "91", d];
+    if (d.startsWith("91")) return [d, "91", d.slice(-10)];
+    for (const L of [3, 2, 1]) {
+      const p = d.slice(0, L);
+      if (CCS.has(p) && p !== "93") {
+        const rem = d.slice(L);
+        if (rem.length >= 7 && rem.length <= 10) return [d, p, rem];
+      }
+    }
+    return [d, "91", d.slice(-10)];
+  }
+
+  function fmtDate(y, mo, dy, hh, mi) {
+    return String(dy).padStart(2, "0") + "-" + String(mo).padStart(2, "0") + "-" + y + " " + hh + "." + String(mi).padStart(2, "0");
+  }
+  function dayOf(y, mo, dy) {
+    const dow = new Date(Date.UTC(y, mo - 1, dy)).getUTCDay();
+    return (dow + 1) + " " + DOW[dow];
+  }
+  // one-pass combined dedup: keep row iff neither its phone nor email was already kept
+  function onePass(rows, pkey, ekey) {
+    const sp = new Set(), se = new Set(), out = [];
+    for (const r of rows) {
+      const p = r[pkey], e = r[ekey];
+      if ((p && sp.has(p)) || (e && se.has(e))) continue;
+      out.push(r);
+      if (p) sp.add(p);
+      if (e) se.add(e);
+    }
+    return out;
+  }
+  const hIdx = header => { const m = {}; header.forEach((h, i) => { const k = norm(h); if (k && !(k in m)) m[k] = i; }); return m; };
+
+  // raw report-CustomersByBatch CSV → sorted-equivalent paid AOA
+  function transformPaidRaw(aoa) {
+    const H = hIdx(aoa[0]);
+    const g = (row, h) => (H[h] !== undefined && row[H[h]] !== undefined) ? row[H[h]] : "";
+    const rows = [];
+    for (let r = 1; r < aoa.length; r++) {
+      const row = aoa[r];
+      if (!row || row.every(c => norm(c) === "")) continue;
+      const m = norm(g(row, "createdAt")).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{2})/);
+      if (!m) continue;
+      const [_, dy, mo, y, hh, mi] = m.map(Number);
+      const [pn, cc, wo] = parsePaid(g(row, "phoneNumber"));
+      rows.push({
+        ts: Date.UTC(y, mo - 1, dy, hh, mi), ord: r, pn, email: norm(g(row, "email")),
+        out: [fmtDate(y, mo, dy, hh, mi), g(row, "name"), g(row, "email"), pn, cc, wo,
+              g(row, "Amount"), g(row, "AgeGroup"), g(row, "Profession (PG)"), g(row, "paymentSlug")]
+      });
+    }
+    rows.sort((a, b) => a.ts - b.ts || a.ord - b.ord);
+    const kept = onePass(rows, "pn", "email");
+    return [["createdAt","name","email","phoneNumber","country_code","without country code","Amount","AgeGroup","Profession (PG)","paymentSlug"],
+            ...kept.map(r => r.out)];
+  }
+
+  function platformOf(slug) {
+    let s = norm(slug);
+    if (s === "ai-bootcamp") return "Bootcamp";
+    for (const f of ["ai-bootcamp-","ai-claude-","ai-tools-","py-"]) {
+      if (s.startsWith(f)) { s = s.slice(f.length); break; }
+    }
+    s = s.replace(/-?\d+$/, "");
+    if (PLATFORM_ALIAS[s]) return PLATFORM_ALIAS[s];
+    return s.split("-").filter(Boolean).map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join("-");
+  }
+
+  // raw export-lead_data CSV → {exAoa, bcAoa} sorted-equivalent
+  function transformLeadRaw(aoa) {
+    const H = hIdx(aoa[0]);
+    const g = (row, h) => (H[h] !== undefined && row[H[h]] !== undefined) ? row[H[h]] : "";
+    const rows = [];
+    for (let r = 1; r < aoa.length; r++) {
+      const row = aoa[r];
+      if (!row || row.every(c => norm(c) === "")) continue;
+      const slug = norm(g(row, "form_id.slug"));
+      if (!KEEP.some(f => slug === f || slug.startsWith(f + "-"))) continue;
+      const m = norm(g(row, "date_created")).match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/);
+      if (!m) continue;
+      // UTC → IST (+5:30)
+      const t = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +m[6]) + (5 * 60 + 30) * 60000);
+      const y = t.getUTCFullYear(), mo = t.getUTCMonth() + 1, dy = t.getUTCDate(), hh = t.getUTCHours(), mi = t.getUTCMinutes();
+      const [pn, cc, wo] = parseLead(g(row, "phone_number"));
+      rows.push({
+        ts: t.getTime(), ord: r, pn, email: norm(g(row, "email")), isbc: slug.startsWith("ai-bootcamp"),
+        out: [fmtDate(y, mo, dy, hh, mi), dayOf(y, mo, dy), g(row, "name"), g(row, "email"), pn, cc, wo,
+              g(row, "current_profession"), g(row, "experience_in_years"), g(row, "age_group"), slug, platformOf(slug)]
+      });
+    }
+    rows.sort((a, b) => a.ts - b.ts || a.ord - b.ord);
+    const kept = onePass(rows, "pn", "email");
+    const header = ["Date Created","Day","name","email","phone_number","country_code","without country code","current_profession","experience_in_years","age_group","form_id.slug","Platform"];
+    return {
+      exAoa: [header, ...kept.filter(r => !r.isbc).map(r => r.out)],
+      bcAoa: [header, ...kept.filter(r => r.isbc).map(r => r.out)],
+      dropped: aoa.length - 1 - rows.length,
+      deduped: rows.length - kept.length
+    };
+  }
+
+  return { transformPaidRaw, transformLeadRaw, parsePaid, parseLead, platformOf };
+});
+
+
 /* ===================== UI ===================== */
-const state = { main: null, bt: null, ex: null }; // {name, aoa} / for ex: {name, exAoa, bcAoa}
+const state = { main: null, bt: null, ex: null };
 const $ = s => document.querySelector(s);
-const drop = $("#drop"), input = $("#fileInput"), go = $("#go"), status = $("#status");
+const gate = $("#gate"), input = $("#fileInput"), ringBtn = $("#ringBtn"), status = $("#status");
 
 const toAoa = ws => XLSX.utils.sheet_to_json(ws, { header: 1, raw: true, defval: "" });
 
@@ -309,17 +630,20 @@ function setStatus(msg, cls) { status.textContent = msg || ""; status.className 
 
 function renderSlots() {
   const cfg = [
-    ["main", state.main, r => (r.aoa.length - 1) + " rows"],
-    ["bt",   state.bt,   r => (r.aoa.length - 1) + " rows"],
-    ["ex",   state.ex,   r => (r.exAoa.length - 1) + " exotic · " + (r.bcAoa.length - 1) + " bootcamp"]
+    ["main", state.main, r => (r.aoa.length - 1).toLocaleString("en-IN") + " rows" + (r.rawNote || "")],
+    ["bt",   state.bt,   r => (r.aoa.length - 1).toLocaleString("en-IN") + " rows" + (r.rawNote || "")],
+    ["ex",   state.ex,   r => (r.exAoa.length - 1).toLocaleString("en-IN") + " exotic · " + (r.bcAoa.length - 1).toLocaleString("en-IN") + " bootcamp" + (r.rawNote || "")]
   ];
   cfg.forEach(([key, val, meta]) => {
     const el = $("#slot-" + key);
     el.classList.toggle("filled", !!val);
     el.querySelector(".file").textContent = val ? val.name : "";
-    el.querySelector(".meta").textContent = val ? meta(val) : "waiting…";
+    el.querySelector(".meta").textContent = val ? meta(val) : "awaiting its bearer…";
   });
-  go.disabled = !(state.main && state.bt && state.ex);
+  const ready = !!(state.main && state.bt && state.ex);
+  ringBtn.disabled = !ready;
+  document.body.classList.toggle("disabledForge", !ready);
+  if (ready) setStatus("The Three are gathered. The Ring answers.", "ok");
 }
 
 function classifyCsv(name, aoa) {
@@ -334,26 +658,44 @@ function classifyCsv(name, aoa) {
 
 async function handleFiles(files) {
   setStatus("");
-  $("#summary").style.display = "none";
   for (const f of files) {
     try {
       if (/\.(xlsx|xls)$/i.test(f.name)) {
         const wb = XLSX.read(await f.arrayBuffer(), { type: "array", raw: true, cellDates: false });
         const exN = wb.SheetNames.find(s => s.trim().toLowerCase() === "exotic");
         const bcN = wb.SheetNames.find(s => s.trim().toLowerCase() === "bootcamp");
-        if (!exN || !bcN) { setStatus(`"${f.name}" — needs both an Exotic and a Bootcamp sheet.`, "err"); continue; }
+        if (!exN || !bcN) { setStatus(`"${f.name}": needs both an Exotic and a Bootcamp sheet.`, "err"); continue; }
         state.ex = { name: f.name, exAoa: toAoa(wb.Sheets[exN]), bcAoa: toAoa(wb.Sheets[bcN]) };
       } else if (/\.csv$/i.test(f.name)) {
         const wb = XLSX.read(await f.text(), { type: "string", raw: true });
-        const aoa = toAoa(wb.Sheets[wb.SheetNames[0]]);
-        if (!aoa.length || !aoa[0].map(h => String(h).trim()).includes("paymentSlug")) {
-          setStatus(`"${f.name}" — doesn't look like a paid-data export (no paymentSlug column).`, "err"); continue;
+        const rawAoa = toAoa(wb.Sheets[wb.SheetNames[0]]);
+        if (!rawAoa.length) { setStatus(`"${f.name}": empty file.`, "err"); continue; }
+        const H = rawAoa[0].map(h => String(h).trim());
+
+        if (H.includes("form_id.slug") && H.includes("date_created")) {
+          const t = RawCore.transformLeadRaw(rawAoa);
+          state.ex = { name: f.name, exAoa: t.exAoa, bcAoa: t.bcAoa,
+            rawNote: ` · raw: ${t.dropped.toLocaleString("en-IN")} off-slug dropped, ${t.deduped.toLocaleString("en-IN")} dupes removed` };
+
+        } else if (H.includes("batchName") || H.includes("isMastery")) {
+          const inRows = rawAoa.length - 1;
+          const aoa = RawCore.transformPaidRaw(rawAoa);
+          const removed = inRows - (aoa.length - 1);
+          const bIdx = H.indexOf("batchName");
+          const isBt = bIdx >= 0 && rawAoa.slice(1, 6).some(r => /bootcamp/i.test(String(r[bIdx] || ""))) || /bootcamp|camp/i.test(f.name);
+          let slot = isBt ? "bt" : "main";
+          if (state[slot] && !state[slot === "main" ? "bt" : "main"]) slot = (slot === "main" ? "bt" : "main");
+          state[slot] = { name: f.name, aoa, rawNote: ` · raw: ${removed} dupes removed` };
+
+        } else if (H.includes("paymentSlug")) {
+          let slot = classifyCsv(f.name, rawAoa);
+          if (state[slot] && !state[slot === "main" ? "bt" : "main"]) slot = (slot === "main" ? "bt" : "main");
+          state[slot] = { name: f.name, aoa: rawAoa };
+        } else {
+          setStatus(`"${f.name}": not a recognised export (need paymentSlug, batchName or form_id.slug columns).`, "err"); continue;
         }
-        let slot = classifyCsv(f.name, aoa);
-        if (state[slot] && !state[slot === "main" ? "bt" : "main"]) slot = (slot === "main" ? "bt" : "main");
-        state[slot] = { name: f.name, aoa };
       } else {
-        setStatus(`"${f.name}" — only .csv and .xlsx files are used.`, "err");
+        setStatus(`"${f.name}": only .csv and .xlsx files pass these doors.`, "err");
       }
     } catch (e) {
       setStatus(`Couldn't read "${f.name}": ${e.message}`, "err");
@@ -362,19 +704,24 @@ async function handleFiles(files) {
   renderSlots();
 }
 
-drop.addEventListener("click", () => input.click());
+gate.addEventListener("click", () => input.click());
+gate.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); input.click(); } });
 input.addEventListener("change", e => { handleFiles([...e.target.files]); input.value = ""; });
-["dragover","dragenter"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
-["dragleave","drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
-drop.addEventListener("drop", e => handleFiles([...e.dataTransfer.files]));
+["dragover","dragenter"].forEach(ev => document.addEventListener(ev, e => { e.preventDefault(); gate.classList.add("over"); }));
+["dragleave","drop"].forEach(ev => document.addEventListener(ev, e => { e.preventDefault(); if (ev === "drop" || !e.relatedTarget) gate.classList.remove("over"); }));
+document.addEventListener("drop", e => handleFiles([...e.dataTransfer.files]));
 
 document.querySelectorAll(".clear").forEach(b => b.addEventListener("click", e => {
-  e.stopPropagation(); state[b.dataset.slot] = null; renderSlots();
+  e.stopPropagation(); state[b.dataset.slot] = null; renderSlots(); setStatus("");
 }));
 $("#swap").addEventListener("click", () => { [state.main, state.bt] = [state.bt, state.main]; renderSlots(); });
 
-go.addEventListener("click", () => {
-  go.disabled = true; setStatus("Merging…");
+ringBtn.addEventListener("click", () => {
+  if (ringBtn.disabled) return;
+  ringBtn.disabled = true;
+  document.body.classList.add("casting");
+  setStatus("Cast into the fire…");
+  emberSurge = 220;
   setTimeout(() => {
     try {
       const result = MergeCore.merge(state.main.aoa, state.bt.aoa, state.ex.exAoa, state.ex.bcAoa);
@@ -385,23 +732,76 @@ go.addEventListener("click", () => {
         .map(([k, v]) => `<tr><td>${k}</td><td class="num">${v.toLocaleString("en-IN")}</td></tr>`).join("");
       const total = Object.values(result.stats.counts).reduce((a, b) => a + b, 0);
       $("#sumRows").innerHTML = rows +
-        `<tr class="total"><td>Total</td><td class="num">${total.toLocaleString("en-IN")}</td></tr>`;
+        `<tr class="total"><td>TOTAL</td><td class="num">${total.toLocaleString("en-IN")}</td></tr>`;
       const d = result.stats.dupesRemoved;
       $("#dupeLine").textContent =
-        `Already-paid duplicates removed — Exotic: ${d.exotic} · Bootcamp: ${d.bootcamp} (matched by phone or email against Main + BT Paid)`;
-      $("#summary").style.display = "block";
-      setStatus("Done — file downloaded.", "ok");
+        `Cast into the fire: already-paid duplicates · Exotic ${d.exotic} · Bootcamp ${d.bootcamp} (matched by phone or email against Main + BT Paid).`;
+      setTimeout(() => { document.body.classList.add("done"); setStatus("It is done.", "ok"); }, 550);
     } catch (e) {
-      setStatus("Merge failed: " + e.message, "err");
-    } finally { go.disabled = false; }
-  }, 30);
+      document.body.classList.remove("casting");
+      ringBtn.disabled = false;
+      setStatus("The forging failed: " + e.message, "err");
+    }
+  }, 1500);
 });
 
 $("#again").addEventListener("click", () => {
+  document.body.classList.remove("done", "casting");
   state.main = state.bt = state.ex = null;
-  $("#summary").style.display = "none"; setStatus(""); renderSlots();
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  renderSlots(); setStatus("");
 });
+
+/* ——— the Eye follows ——— */
+const pupil = $("#pupilG");
+let mx = innerWidth / 2, my = innerHeight / 2, idleT = 0, lastMove = 0, eyeRaf = false;
+addEventListener("mousemove", e => {
+  mx = e.clientX; my = e.clientY; lastMove = performance.now();
+  if (!eyeRaf) { eyeRaf = true; requestAnimationFrame(moveEye); }
+  const px = (e.clientX / innerWidth - .5), py = (e.clientY / innerHeight - .5);
+  $("#mapLayer").style.transform = `translate(${px * -16}px, ${py * -10}px)`;
+});
+function moveEye() {
+  eyeRaf = false;
+  const r = document.getElementById("eyeWrap").getBoundingClientRect();
+  const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  const dx = mx - cx, dy = my - cy, dist = Math.hypot(dx, dy) || 1;
+  const lim = Math.min(1, dist / 300);
+  pupil.style.transform = `translate(${(dx / dist) * 26 * lim}px, ${(dy / dist) * 9 * lim}px)`;
+}
+setInterval(() => {           // idle wander
+  if (performance.now() - lastMove < 3000) return;
+  idleT += .9;
+  pupil.style.transform = `translate(${Math.sin(idleT) * 22}px, ${Math.cos(idleT * .6) * 5}px)`;
+}, 900);
+
+/* ——— embers ——— */
+const cv = $("#embers"), cx2 = cv.getContext("2d");
+let W, Hh, parts = [], emberSurge = 0;
+function sizeCv() { W = cv.width = innerWidth; Hh = cv.height = innerHeight; }
+sizeCv(); addEventListener("resize", sizeCv);
+function spawn(hot) {
+  return { x: Math.random() * W, y: Hh + 8, vy: .35 + Math.random() * (hot ? 2.4 : .9),
+    vx: (Math.random() - .5) * .3, s: .8 + Math.random() * (hot ? 2.6 : 1.8),
+    a: .25 + Math.random() * .5, hue: 22 + Math.random() * 22, ph: Math.random() * 6.28 };
+}
+for (let i = 0; i < 70; i++) { const p = spawn(false); p.y = Math.random() * Hh; parts.push(p); }
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+(function tick(t) {
+  if (reduced) return;
+  cx2.clearRect(0, 0, W, Hh);
+  if (emberSurge > 0 && parts.length < 320) { for (let i = 0; i < 6; i++) parts.push(spawn(true)); emberSurge--; }
+  parts = parts.filter(p => p.y > -12 && p.a > .02);
+  while (parts.length < 70) parts.push(spawn(false));
+  for (const p of parts) {
+    p.y -= p.vy; p.x += p.vx + Math.sin(t / 900 + p.ph) * .25; p.a *= .9992;
+    const fl = .7 + .3 * Math.sin(t / 120 + p.ph);
+    cx2.globalAlpha = p.a * fl;
+    cx2.fillStyle = `hsl(${p.hue} 95% ${52 + fl * 12}%)`;
+    cx2.beginPath(); cx2.arc(p.x, p.y, p.s, 0, 6.29); cx2.fill();
+  }
+  cx2.globalAlpha = 1;
+  requestAnimationFrame(tick);
+})(0);
 
 renderSlots();
 </script>
