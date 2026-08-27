@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Total Ledger — Weekly Lead Merge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rye&family=Bitter:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  :root{
+    --leather:#191008; --leather2:#241709; --parch:#ecdcb6; --parch2:#e2cfa2;
+    --ink:#2b1c10; --red:#8f2318; --red2:#b3402f; --gold:#c9a227; --faded:#8a7454;
+    --ok:#3f6d3a;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    min-height:100vh; font-family:'Bitter',Georgia,serif; color:var(--parch);
+    background:
+      radial-gradient(1200px 600px at 50% -10%, rgba(201,162,39,.10), transparent 60%),
+      repeating-linear-gradient(45deg, rgba(0,0,0,.18) 0 2px, transparent 2px 6px),
+      linear-gradient(180deg, var(--leather2), var(--leather) 45%);
+    display:flex; flex-direction:column; align-items:center; padding:34px 16px 60px;
+  }
+  .star{color:var(--gold); letter-spacing:.4em; font-size:13px; margin-bottom:6px;}
+  h1{
+    font-family:'Rye',serif; font-weight:400; font-size:clamp(30px,5.5vw,54px);
+    color:var(--parch); text-shadow:0 3px 0 rgba(0,0,0,.55); letter-spacing:.04em;
+  }
+  .sub{color:var(--faded); margin-top:6px; font-size:14px; letter-spacing:.14em; text-transform:uppercase;}
+  .rope{width:min(560px,80vw); height:2px; margin:22px 0 26px;
+    background:repeating-linear-gradient(90deg, var(--gold) 0 8px, transparent 8px 14px); opacity:.55;}
+
+  .board{width:min(980px,100%);}
+
+  /* Drop zone */
+  #drop{
+    border:2px dashed rgba(236,220,182,.45); border-radius:10px; padding:34px 20px;
+    text-align:center; cursor:pointer; transition:.18s;
+    background:rgba(0,0,0,.25);
+  }
+  #drop:hover, #drop.over{border-color:var(--gold); background:rgba(201,162,39,.07);}
+  #drop .big{font-size:19px; font-weight:600;}
+  #drop .small{color:var(--faded); font-size:13px; margin-top:6px;}
+  input[type=file]{display:none;}
+
+  /* Slots */
+  .slots{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; margin-top:18px;}
+  .slot{
+    background:linear-gradient(180deg,var(--parch),var(--parch2)); color:var(--ink);
+    border-radius:8px; padding:14px 16px; position:relative;
+    box-shadow:0 4px 0 rgba(0,0,0,.45), inset 0 0 0 1px rgba(43,28,16,.25);
+    border-top:5px solid var(--red);
+  }
+  .slot h3{font-size:13px; text-transform:uppercase; letter-spacing:.12em; color:var(--red);}
+  .slot .want{font-size:12px; color:#6d5232; margin-top:2px;}
+  .slot .file{margin-top:10px; font-size:13.5px; font-weight:700; word-break:break-all; min-height:20px;}
+  .slot .meta{font-size:12.5px; color:#6d5232; margin-top:3px; min-height:16px;}
+  .slot.filled{border-top-color:var(--ok);}
+  .slot.filled::after{content:"✔"; position:absolute; top:10px; right:12px; color:var(--ok); font-size:18px; font-weight:700;}
+  .slot .clear{position:absolute; bottom:10px; right:12px; background:none; border:none; color:#8a5a2b;
+    font-family:inherit; font-size:11.5px; cursor:pointer; text-decoration:underline; display:none;}
+  .slot.filled .clear{display:block;}
+
+  .swaprow{margin-top:10px; text-align:center;}
+  #swap{background:none; border:1px solid rgba(236,220,182,.35); color:var(--parch);
+    font-family:'Bitter',serif; font-size:12.5px; padding:6px 14px; border-radius:6px; cursor:pointer;}
+  #swap:hover{border-color:var(--gold); color:var(--gold);}
+
+  /* Action */
+  .actions{margin-top:26px; text-align:center;}
+  #go{
+    font-family:'Rye',serif; font-size:20px; letter-spacing:.06em; color:var(--parch);
+    background:linear-gradient(180deg,var(--red2),var(--red)); border:none; border-radius:8px;
+    padding:15px 42px; cursor:pointer; box-shadow:0 5px 0 #4d1009, 0 8px 18px rgba(0,0,0,.5);
+    transition:.15s;
+  }
+  #go:hover:not(:disabled){transform:translateY(-2px); box-shadow:0 7px 0 #4d1009, 0 12px 22px rgba(0,0,0,.55);}
+  #go:active:not(:disabled){transform:translateY(2px); box-shadow:0 2px 0 #4d1009;}
+  #go:disabled{opacity:.4; cursor:not-allowed; filter:grayscale(.4);}
+  #status{margin-top:12px; font-size:13.5px; color:var(--faded); min-height:18px;}
+  #status.err{color:#e08070;}
+  #status.ok{color:#9dc08b;}
+
+  /* Summary */
+  #summary{display:none; margin-top:30px; background:linear-gradient(180deg,var(--parch),var(--parch2));
+    color:var(--ink); border-radius:8px; padding:22px 24px;
+    box-shadow:0 4px 0 rgba(0,0,0,.45), inset 0 0 0 1px rgba(43,28,16,.25);}
+  #summary h2{font-family:'Rye',serif; font-weight:400; color:var(--red); font-size:22px; text-align:center;}
+  #summary .tag{text-align:center; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:#6d5232; margin:2px 0 14px;}
+  table{width:100%; border-collapse:collapse; font-size:14px;}
+  th,td{padding:7px 10px; border-bottom:1px dashed rgba(43,28,16,.3); text-align:left;}
+  th{font-size:11.5px; text-transform:uppercase; letter-spacing:.1em; color:#6d5232;}
+  td.num{text-align:right; font-variant-numeric:tabular-nums; font-weight:700;}
+  tr.total td{border-bottom:none; border-top:2px solid var(--ink); font-weight:700;}
+  .dupes{margin-top:12px; font-size:13px; color:#6d5232; text-align:center;}
+  #again{display:block; margin:16px auto 0; background:none; border:1px solid var(--red);
+    color:var(--red); font-family:'Bitter',serif; font-size:13px; padding:7px 18px; border-radius:6px; cursor:pointer;}
+  #again:hover{background:var(--red); color:var(--parch);}
+  footer{margin-top:34px; color:rgba(236,220,182,.35); font-size:11.5px; letter-spacing:.1em;}
+</style>
+</head>
+<body>
+  <div class="star">★ ★ ★</div>
+  <h1>TOTAL LEDGER</h1>
+  <div class="sub">Main · BT Paid · Exotic · Bootcamp — Weekly Merge</div>
+  <div class="rope"></div>
+
+  <div class="board">
+    <div id="drop">
+      <div class="big">Drop all three files here</div>
+      <div class="small">Main paid CSV · Bootcamp Paid CSV · Exotic-sorted workbook (.xlsx) — together or one by one. Click to browse.</div>
+      <input type="file" id="fileInput" multiple accept=".csv,.xlsx,.xls">
+    </div>
+
+    <div class="slots">
+      <div class="slot" id="slot-main">
+        <h3>1 · Main Paid</h3><div class="want">.csv — main workshop payments</div>
+        <div class="file"></div><div class="meta"></div>
+        <button class="clear" data-slot="main">remove</button>
+      </div>
+      <div class="slot" id="slot-bt">
+        <h3>2 · Bootcamp Paid</h3><div class="want">.csv — bootcamp payments</div>
+        <div class="file"></div><div class="meta"></div>
+        <button class="clear" data-slot="bt">remove</button>
+      </div>
+      <div class="slot" id="slot-ex">
+        <h3>3 · Exotic Sorted</h3><div class="want">.xlsx — sheets: Exotic + Bootcamp</div>
+        <div class="file"></div><div class="meta"></div>
+        <button class="clear" data-slot="ex">remove</button>
+      </div>
+    </div>
+    <div class="swaprow"><button id="swap">⇄ swap the two CSVs</button></div>
+
+    <div class="actions">
+      <button id="go" disabled>Merge &amp; Download</button>
+      <div id="status"></div>
+    </div>
+
+    <div id="summary">
+      <h2>Ledger Closed</h2>
+      <div class="tag">Total_Sorted_Data_File — downloaded</div>
+      <table>
+        <thead><tr><th>Sheet</th><th style="text-align:right">Rows</th></tr></thead>
+        <tbody id="sumRows"></tbody>
+      </table>
+      <div class="dupes" id="dupeLine"></div>
+      <button id="again">Run another week</button>
+    </div>
+  </div>
+
+  <footer>HOET · lead ops · runs fully in your browser — no data leaves this page</footer>
+
+<script>
+/* ===================== CORE MERGE LOGIC (verified against reference output) ===================== */
+(function (root, factory) {
+  if (typeof module !== "undefined" && module.exports) module.exports = factory();
+  else root.MergeCore = factory();
+})(typeof self !== "undefined" ? self : this, function () {
+
+  const OUT_HEADERS = ["createdAt","Day","name","email","phoneNumber","country_code",
+    "without country code","Amount","AgeGroup","Profession (PG)","Exp","paymentSlug","platform","Lead"];
+  const STUD = new Set(["Currently Student","opt_student"]);
+  const BUS  = new Set(["Business Owner / Entrepreneur","opt_business_owner"]);
+  const EDU  = new Set(["Educator / Teacher","opt_educator_teacher"]);
+  const DOW  = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+  const norm = v => (v === null || v === undefined) ? "" : String(v).trim();
+  const toNum = v => { const s = norm(v); return /^\d+$/.test(s) ? Number(s) : v; };
+  const toAmt = v => { const s = norm(v); const n = Number(s); return (s !== "" && isFinite(n)) ? n : v; };
+
+  function parseDMY(s) { // "23-08-2026 0.37"  (dd-mm-yyyy H.MM)
+    const m = norm(s).match(/^(\d{1,2})-(\d{1,2})-(\d{4})\s+(\d{1,2})\.(\d{1,2})/);
+    if (!m) return null;
+    return { d:+m[1], mo:+m[2], y:+m[3], hh:+m[4], mi:+m[5] };
+  }
+  function excelSerial(p) {
+    const days = Math.round((Date.UTC(p.y, p.mo - 1, p.d) - Date.UTC(1899, 11, 30)) / 86400000);
+    return days + (p.hh * 60 + p.mi) / 1440;
+  }
+  function dayLabel(p) {
+    const dow = new Date(Date.UTC(p.y, p.mo - 1, p.d)).getUTCDay(); // 0 = Sun
+    return (dow + 1) + " " + DOW[dow];                              // week runs Sun(1)..Sat(7)
+  }
+  function headerIndex(headerRow) {
+    const m = {};
+    headerRow.forEach((h, i) => { const k = norm(h); if (k && !(k in m)) m[k] = i; });
+    return m;
+  }
+  const blankRow = row => !row || row.every(c => norm(c) === "");
+
+  function buildPaidRows(aoa, lead) {
+    const H = headerIndex(aoa[0]); const out = [];
+    const g = (row, h) => (H[h] !== undefined && row[H[h]] !== undefined) ? row[H[h]] : "";
+    for (let r = 1; r < aoa.length; r++) {
+      const row = aoa[r]; if (blankRow(row)) continue;
+      const p = parseDMY(g(row, "createdAt"));
+      out.push({
+        cells: [
+          p ? { date: true, v: excelSerial(p) } : g(row, "createdAt"),
+          p ? dayLabel(p) : "",
+          g(row, "name"), g(row, "email"),
+          toNum(g(row, "phoneNumber")), toNum(g(row, "country_code")), toNum(g(row, "without country code")),
+          toAmt(g(row, "Amount")), g(row, "AgeGroup"), g(row, "Profession (PG)"),
+          "NA", g(row, "paymentSlug"), "NA", lead
+        ],
+        phone: norm(g(row, "phoneNumber")),
+        email: norm(g(row, "email")).toLowerCase(),
+        prof:  norm(g(row, "Profession (PG)"))
+      });
+    }
+    return out;
+  }
+
+  function buildLeadRows(aoa, lead) {
+    const H = headerIndex(aoa[0]); const out = [];
+    const g = (row, h) => (H[h] !== undefined && row[H[h]] !== undefined) ? row[H[h]] : "";
+    for (let r = 1; r < aoa.length; r++) {
+      const row = aoa[r]; if (blankRow(row)) continue;
+      out.push({
+        cells: [
+          norm(g(row, "Date Created")), g(row, "Day"),
+          g(row, "name"), g(row, "email"),
+          toNum(g(row, "phone_number")), toNum(g(row, "country_code")), toNum(g(row, "without country code")),
+          "NA", g(row, "age_group"), g(row, "current_profession"),
+          g(row, "experience_in_years"), g(row, "form_id.slug"), g(row, "Platform"), lead
+        ],
+        phone: norm(g(row, "phone_number")),
+        email: norm(g(row, "email")).toLowerCase(),
+        prof:  norm(g(row, "current_profession"))
+      });
+    }
+    return out;
+  }
+
+  function merge(mainAoa, btAoa, exoticAoa, bootcampAoa) {
+    const mainRows = buildPaidRows(mainAoa, "Main");
+    const btRows   = buildPaidRows(btAoa, "BT Paid");
+
+    const keyP = new Set(), keyE = new Set();
+    mainRows.concat(btRows).forEach(r => {
+      if (r.phone) keyP.add(r.phone);
+      if (r.email) keyE.add(r.email);
+    });
+    const isDup = r => (r.phone && keyP.has(r.phone)) || (r.email && keyE.has(r.email));
+
+    const exAll = buildLeadRows(exoticAoa, "Exotic");
+    const bcAll = buildLeadRows(bootcampAoa, "Bootcamp");
+    const ex = exAll.filter(r => !isDup(r));
+    const bc = bcAll.filter(r => !isDup(r));
+
+    const inAny = r => STUD.has(r.prof) || BUS.has(r.prof) || EDU.has(r.prof);
+    const rest  = rows => rows.filter(r => !inAny(r));
+    const pick  = (S) => [].concat(
+      mainRows.filter(r => S.has(r.prof)), btRows.filter(r => S.has(r.prof)),
+      ex.filter(r => S.has(r.prof)),       bc.filter(r => S.has(r.prof))
+    );
+
+    const sheets = {
+      "Main": rest(mainRows), "Bootcamp Paid": rest(btRows),
+      "Exotic": rest(ex), "Bootcamp": rest(bc),
+      "Student": pick(STUD), "Business": pick(BUS), "Educator": pick(EDU)
+    };
+    return {
+      sheets,
+      stats: {
+        inputs: { main: mainRows.length, btPaid: btRows.length, exotic: exAll.length, bootcamp: bcAll.length },
+        dupesRemoved: { exotic: exAll.length - ex.length, bootcamp: bcAll.length - bc.length },
+        counts: Object.fromEntries(Object.entries(sheets).map(([k, v]) => [k, v.length]))
+      }
+    };
+  }
+
+  function sheetFromRows(XLSX, rows) {
+    const ws = {};
+    OUT_HEADERS.forEach((h, c) => { ws[XLSX.utils.encode_cell({ r: 0, c })] = { t: "s", v: h }; });
+    rows.forEach((row, i) => {
+      row.cells.forEach((val, c) => {
+        if (val === null || val === undefined) return;
+        const addr = XLSX.utils.encode_cell({ r: i + 1, c });
+        if (typeof val === "object" && val.date) ws[addr] = { t: "n", v: val.v, z: "m/d/yy h:mm" };
+        else if (typeof val === "number")        ws[addr] = { t: "n", v: val };
+        else { const s = String(val); if (s === "") return; ws[addr] = { t: "s", v: s }; }
+      });
+    });
+    ws["!ref"] = XLSX.utils.encode_range({ s: { c: 0, r: 0 }, e: { c: OUT_HEADERS.length - 1, r: rows.length } });
+    ws["!cols"] = [16,8,20,30,14,12,18,10,10,28,12,26,12,10].map(w => ({ wch: w }));
+    return ws;
+  }
+
+  function toWorkbook(XLSX, result) {
+    const wb = XLSX.utils.book_new();
+    ["Main","Bootcamp Paid","Exotic","Bootcamp","Student","Business","Educator"]
+      .forEach(name => XLSX.utils.book_append_sheet(wb, sheetFromRows(XLSX, result.sheets[name]), name));
+    return wb;
+  }
+
+  return { merge, toWorkbook, OUT_HEADERS, parseDMY, dayLabel };
+});
+
+/* ===================== UI ===================== */
+const state = { main: null, bt: null, ex: null }; // {name, aoa} / for ex: {name, exAoa, bcAoa}
+const $ = s => document.querySelector(s);
+const drop = $("#drop"), input = $("#fileInput"), go = $("#go"), status = $("#status");
+
+const toAoa = ws => XLSX.utils.sheet_to_json(ws, { header: 1, raw: true, defval: "" });
+
+function setStatus(msg, cls) { status.textContent = msg || ""; status.className = cls || ""; }
+
+function renderSlots() {
+  const cfg = [
+    ["main", state.main, r => (r.aoa.length - 1) + " rows"],
+    ["bt",   state.bt,   r => (r.aoa.length - 1) + " rows"],
+    ["ex",   state.ex,   r => (r.exAoa.length - 1) + " exotic · " + (r.bcAoa.length - 1) + " bootcamp"]
+  ];
+  cfg.forEach(([key, val, meta]) => {
+    const el = $("#slot-" + key);
+    el.classList.toggle("filled", !!val);
+    el.querySelector(".file").textContent = val ? val.name : "";
+    el.querySelector(".meta").textContent = val ? meta(val) : "waiting…";
+  });
+  go.disabled = !(state.main && state.bt && state.ex);
+}
+
+function classifyCsv(name, aoa) {
+  const n = name.toLowerCase();
+  if (/main/.test(n)) return "main";
+  if (/bootcamp|camp|bt[\W_]?paid/.test(n)) return "bt";
+  const H = aoa[0].map(h => String(h).trim());
+  if (H[0] === "createdAt") return "main";
+  if (H[H.length - 1] === "createdAt") return "bt";
+  return (aoa.length - 1) > 1000 ? "main" : "bt";
+}
+
+async function handleFiles(files) {
+  setStatus("");
+  $("#summary").style.display = "none";
+  for (const f of files) {
+    try {
+      if (/\.(xlsx|xls)$/i.test(f.name)) {
+        const wb = XLSX.read(await f.arrayBuffer(), { type: "array", raw: true, cellDates: false });
+        const exN = wb.SheetNames.find(s => s.trim().toLowerCase() === "exotic");
+        const bcN = wb.SheetNames.find(s => s.trim().toLowerCase() === "bootcamp");
+        if (!exN || !bcN) { setStatus(`"${f.name}" — needs both an Exotic and a Bootcamp sheet.`, "err"); continue; }
+        state.ex = { name: f.name, exAoa: toAoa(wb.Sheets[exN]), bcAoa: toAoa(wb.Sheets[bcN]) };
+      } else if (/\.csv$/i.test(f.name)) {
+        const wb = XLSX.read(await f.text(), { type: "string", raw: true });
+        const aoa = toAoa(wb.Sheets[wb.SheetNames[0]]);
+        if (!aoa.length || !aoa[0].map(h => String(h).trim()).includes("paymentSlug")) {
+          setStatus(`"${f.name}" — doesn't look like a paid-data export (no paymentSlug column).`, "err"); continue;
+        }
+        let slot = classifyCsv(f.name, aoa);
+        if (state[slot] && !state[slot === "main" ? "bt" : "main"]) slot = (slot === "main" ? "bt" : "main");
+        state[slot] = { name: f.name, aoa };
+      } else {
+        setStatus(`"${f.name}" — only .csv and .xlsx files are used.`, "err");
+      }
+    } catch (e) {
+      setStatus(`Couldn't read "${f.name}": ${e.message}`, "err");
+    }
+  }
+  renderSlots();
+}
+
+drop.addEventListener("click", () => input.click());
+input.addEventListener("change", e => { handleFiles([...e.target.files]); input.value = ""; });
+["dragover","dragenter"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave","drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", e => handleFiles([...e.dataTransfer.files]));
+
+document.querySelectorAll(".clear").forEach(b => b.addEventListener("click", e => {
+  e.stopPropagation(); state[b.dataset.slot] = null; renderSlots();
+}));
+$("#swap").addEventListener("click", () => { [state.main, state.bt] = [state.bt, state.main]; renderSlots(); });
+
+go.addEventListener("click", () => {
+  go.disabled = true; setStatus("Merging…");
+  setTimeout(() => {
+    try {
+      const result = MergeCore.merge(state.main.aoa, state.bt.aoa, state.ex.exAoa, state.ex.bcAoa);
+      const wb = MergeCore.toWorkbook(XLSX, result);
+      XLSX.writeFile(wb, "Total_Sorted_Data_File__Main__BT_Paid__Exotic__Bootcamp__Merged.xlsx", { compression: true });
+
+      const rows = Object.entries(result.stats.counts)
+        .map(([k, v]) => `<tr><td>${k}</td><td class="num">${v.toLocaleString("en-IN")}</td></tr>`).join("");
+      const total = Object.values(result.stats.counts).reduce((a, b) => a + b, 0);
+      $("#sumRows").innerHTML = rows +
+        `<tr class="total"><td>Total</td><td class="num">${total.toLocaleString("en-IN")}</td></tr>`;
+      const d = result.stats.dupesRemoved;
+      $("#dupeLine").textContent =
+        `Already-paid duplicates removed — Exotic: ${d.exotic} · Bootcamp: ${d.bootcamp} (matched by phone or email against Main + BT Paid)`;
+      $("#summary").style.display = "block";
+      setStatus("Done — file downloaded.", "ok");
+    } catch (e) {
+      setStatus("Merge failed: " + e.message, "err");
+    } finally { go.disabled = false; }
+  }, 30);
+});
+
+$("#again").addEventListener("click", () => {
+  state.main = state.bt = state.ex = null;
+  $("#summary").style.display = "none"; setStatus(""); renderSlots();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+renderSlots();
+</script>
+</body>
+</html>
