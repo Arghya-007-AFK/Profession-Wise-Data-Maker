@@ -555,7 +555,7 @@
     for (let r = 1; r < aoa.length; r++) {
       const row = aoa[r];
       if (!row || row.every(c => norm(c) === "")) continue;
-      const m = norm(g(row, "createdAt")).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{2})/);
+      const m = norm(g(row, "createdAt")).match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})\s+(\d{1,2})[:.](\d{2})/);
       if (!m) continue;
       const [_, dy, mo, y, hh, mi] = m.map(Number);
       const [pn, cc, wo] = parsePaid(g(row, "phoneNumber"));
@@ -661,13 +661,13 @@ async function handleFiles(files) {
   for (const f of files) {
     try {
       if (/\.(xlsx|xls)$/i.test(f.name)) {
-        const wb = XLSX.read(await f.arrayBuffer(), { type: "array", raw: true, cellDates: false });
+        const wb = XLSX.read(await f.arrayBuffer(), { type: "array", raw: true, cellDates: false, dense: true });
         const exN = wb.SheetNames.find(s => s.trim().toLowerCase() === "exotic");
         const bcN = wb.SheetNames.find(s => s.trim().toLowerCase() === "bootcamp");
         if (!exN || !bcN) { setStatus(`"${f.name}": needs both an Exotic and a Bootcamp sheet.`, "err"); continue; }
         state.ex = { name: f.name, exAoa: toAoa(wb.Sheets[exN]), bcAoa: toAoa(wb.Sheets[bcN]) };
       } else if (/\.csv$/i.test(f.name)) {
-        const wb = XLSX.read(await f.text(), { type: "string", raw: true });
+        const wb = XLSX.read(await f.text(), { type: "string", raw: true, dense: true });
         const rawAoa = toAoa(wb.Sheets[wb.SheetNames[0]]);
         if (!rawAoa.length) { setStatus(`"${f.name}": empty file.`, "err"); continue; }
         const H = rawAoa[0].map(h => String(h).trim());
@@ -752,24 +752,27 @@ $("#again").addEventListener("click", () => {
 });
 
 /* ——— the Eye follows ——— */
-const pupil = $("#pupilG");
+const pupil = $("#pupilG"), mapLayer = $("#mapLayer");
 let mx = innerWidth / 2, my = innerHeight / 2, idleT = 0, lastMove = 0, eyeRaf = false;
+let eyePX = 0, eyePY = 0;                       // eye centre in page coords, cached
+function cacheEye() {
+  const r = document.getElementById("eyeWrap").getBoundingClientRect();
+  eyePX = r.left + scrollX + r.width / 2; eyePY = r.top + scrollY + r.height / 2;
+}
+cacheEye(); addEventListener("resize", cacheEye);
 addEventListener("mousemove", e => {
   mx = e.clientX; my = e.clientY; lastMove = performance.now();
   if (!eyeRaf) { eyeRaf = true; requestAnimationFrame(moveEye); }
-  const px = (e.clientX / innerWidth - .5), py = (e.clientY / innerHeight - .5);
-  $("#mapLayer").style.transform = `translate(${px * -16}px, ${py * -10}px)`;
-});
+}, { passive: true });
 function moveEye() {
   eyeRaf = false;
-  const r = document.getElementById("eyeWrap").getBoundingClientRect();
-  const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-  const dx = mx - cx, dy = my - cy, dist = Math.hypot(dx, dy) || 1;
-  const lim = Math.min(1, dist / 300);
+  const dx = mx - (eyePX - scrollX), dy = my - (eyePY - scrollY);
+  const dist = Math.hypot(dx, dy) || 1, lim = Math.min(1, dist / 300);
   pupil.style.transform = `translate(${(dx / dist) * 26 * lim}px, ${(dy / dist) * 9 * lim}px)`;
+  mapLayer.style.transform = `translate(${(mx / innerWidth - .5) * -16}px, ${(my / innerHeight - .5) * -10}px)`;
 }
 setInterval(() => {           // idle wander
-  if (performance.now() - lastMove < 3000) return;
+  if (document.hidden || performance.now() - lastMove < 3000) return;
   idleT += .9;
   pupil.style.transform = `translate(${Math.sin(idleT) * 22}px, ${Math.cos(idleT * .6) * 5}px)`;
 }, 900);
@@ -786,21 +789,27 @@ function spawn(hot) {
 }
 for (let i = 0; i < 70; i++) { const p = spawn(false); p.y = Math.random() * Hh; parts.push(p); }
 const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let lastFrame = 0;
 (function tick(t) {
   if (reduced) return;
+  requestAnimationFrame(tick);
+  if (document.hidden) return;
+  const dt = t - lastFrame;
+  if (dt < 31) return;                          // ~30fps is plenty for drifting embers
+  const k = Math.min(dt, 100) / 16.7;           // scale motion so speed looks unchanged
+  lastFrame = t;
   cx2.clearRect(0, 0, W, Hh);
   if (emberSurge > 0 && parts.length < 320) { for (let i = 0; i < 6; i++) parts.push(spawn(true)); emberSurge--; }
   parts = parts.filter(p => p.y > -12 && p.a > .02);
   while (parts.length < 70) parts.push(spawn(false));
   for (const p of parts) {
-    p.y -= p.vy; p.x += p.vx + Math.sin(t / 900 + p.ph) * .25; p.a *= .9992;
+    p.y -= p.vy * k; p.x += (p.vx + Math.sin(t / 900 + p.ph) * .25) * k; p.a *= Math.pow(.9992, k);
     const fl = .7 + .3 * Math.sin(t / 120 + p.ph);
     cx2.globalAlpha = p.a * fl;
     cx2.fillStyle = `hsl(${p.hue} 95% ${52 + fl * 12}%)`;
     cx2.beginPath(); cx2.arc(p.x, p.y, p.s, 0, 6.29); cx2.fill();
   }
   cx2.globalAlpha = 1;
-  requestAnimationFrame(tick);
 })(0);
 
 renderSlots();
