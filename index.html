@@ -346,6 +346,8 @@
   const STUD = new Set(["Currently Student","opt_student"]);
   const BUS  = new Set(["Business Owner / Entrepreneur","opt_business_owner"]);
   const EDU  = new Set(["Educator / Teacher","opt_educator_teacher"]);
+  const FIN  = new Set(["Finance / Banking / Insurance","opt_finance_banking_insurance"]);
+  const FRUN = new Set(["Freelancer / Consultant","Unemployed","opt_freelancer","opt_unemployed"]);
   const DOW  = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
   const norm = v => (v === null || v === undefined) ? "" : String(v).trim();
@@ -432,7 +434,7 @@
     const ex = exAll.filter(r => !isDup(r));
     const bc = bcAll.filter(r => !isDup(r));
 
-    const inAny = r => STUD.has(r.prof) || BUS.has(r.prof) || EDU.has(r.prof);
+    const inAny = r => STUD.has(r.prof) || BUS.has(r.prof) || EDU.has(r.prof) || FIN.has(r.prof) || FRUN.has(r.prof);
     const rest  = rows => rows.filter(r => !inAny(r));
     const pick  = (S) => [].concat(
       mainRows.filter(r => S.has(r.prof)), btRows.filter(r => S.has(r.prof)),
@@ -442,7 +444,8 @@
     const sheets = {
       "Main": rest(mainRows), "Bootcamp Paid": rest(btRows),
       "Exotic": rest(ex), "Bootcamp": rest(bc),
-      "Student": pick(STUD), "Business": pick(BUS), "Educator": pick(EDU)
+      "Student": pick(STUD), "Business": pick(BUS), "Educator": pick(EDU),
+      "Finance": pick(FIN), "Freelancer & Unemployed": pick(FRUN)
     };
     return {
       sheets,
@@ -473,7 +476,7 @@
 
   function toWorkbook(XLSX, result) {
     const wb = XLSX.utils.book_new();
-    ["Main","Bootcamp Paid","Exotic","Bootcamp","Student","Business","Educator"]
+    ["Main","Bootcamp Paid","Exotic","Bootcamp","Student","Business","Educator","Finance","Freelancer & Unemployed"]
       .forEach(name => XLSX.utils.book_append_sheet(wb, sheetFromRows(XLSX, result.sheets[name]), name));
     return wb;
   }
