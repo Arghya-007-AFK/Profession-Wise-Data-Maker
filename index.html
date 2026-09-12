@@ -348,6 +348,7 @@
   const EDU  = new Set(["Educator / Teacher","opt_educator_teacher"]);
   const FIN  = new Set(["Finance / Banking / Insurance","opt_finance_banking_insurance"]);
   const FRUN = new Set(["Freelancer / Consultant","Unemployed","opt_freelancer","opt_unemployed"]);
+  const IT   = new Set(["IT / Software","opt_it_software","opt_it_software_data"]);
   const DOW  = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
   const norm = v => (v === null || v === undefined) ? "" : String(v).trim();
@@ -391,7 +392,8 @@
         ],
         phone: norm(g(row, "phoneNumber")),
         email: norm(g(row, "email")).toLowerCase(),
-        prof:  norm(g(row, "Profession (PG)"))
+        prof:  norm(g(row, "Profession (PG)")),
+        age:   norm(g(row, "AgeGroup"))
       });
     }
     return out;
@@ -402,9 +404,10 @@
     const g = (row, h) => (H[h] !== undefined && row[H[h]] !== undefined) ? row[H[h]] : "";
     for (let r = 1; r < aoa.length; r++) {
       const row = aoa[r]; if (blankRow(row)) continue;
+      const pd = parseDMY(g(row, "Date Created"));
       out.push({
         cells: [
-          norm(g(row, "Date Created")), g(row, "Day"),
+          pd ? { date: true, v: excelSerial(pd) } : norm(g(row, "Date Created")), g(row, "Day"),
           g(row, "name"), g(row, "email"),
           toNum(g(row, "phone_number")), toNum(g(row, "country_code")), toNum(g(row, "without country code")),
           "NA", g(row, "age_group"), g(row, "current_profession"),
@@ -412,7 +415,8 @@
         ],
         phone: norm(g(row, "phone_number")),
         email: norm(g(row, "email")).toLowerCase(),
-        prof:  norm(g(row, "current_profession"))
+        prof:  norm(g(row, "current_profession")),
+        age:   norm(g(row, "age_group"))
       });
     }
     return out;
@@ -422,36 +426,41 @@
     const mainRows = buildPaidRows(mainAoa, "Main");
     const btRows   = buildPaidRows(btAoa, "BT Paid");
 
+    // global one-pass dedup by phone OR email, priority: Main, BT Paid, Exotic, Bootcamp
     const keyP = new Set(), keyE = new Set();
-    mainRows.concat(btRows).forEach(r => {
+    const keepRow = r => {
+      if ((r.phone && keyP.has(r.phone)) || (r.email && keyE.has(r.email))) return false;
       if (r.phone) keyP.add(r.phone);
       if (r.email) keyE.add(r.email);
-    });
-    const isDup = r => (r.phone && keyP.has(r.phone)) || (r.email && keyE.has(r.email));
-
+      return true;
+    };
     const exAll = buildLeadRows(exoticAoa, "Exotic");
     const bcAll = buildLeadRows(bootcampAoa, "Bootcamp");
-    const ex = exAll.filter(r => !isDup(r));
-    const bc = bcAll.filter(r => !isDup(r));
+    const mainAll = mainRows, btAll = btRows;
+    const mainK = mainAll.filter(keepRow);
+    const btK   = btAll.filter(keepRow);
+    const ex = exAll.filter(keepRow);
+    const bc = bcAll.filter(keepRow);
 
-    const inAny = r => STUD.has(r.prof) || BUS.has(r.prof) || EDU.has(r.prof) || FIN.has(r.prof) || FRUN.has(r.prof);
-    const rest  = rows => rows.filter(r => !inAny(r));
-    const pick  = (S) => [].concat(
-      mainRows.filter(r => S.has(r.prof)), btRows.filter(r => S.has(r.prof)),
-      ex.filter(r => S.has(r.prof)),       bc.filter(r => S.has(r.prof))
-    );
+    const inAny = r => STUD.has(r.prof) || BUS.has(r.prof) || EDU.has(r.prof) || FIN.has(r.prof) || FRUN.has(r.prof) || IT.has(r.prof);
+    const isU21 = r => { const a = (r.age || "").toLowerCase().replace(/[_\s]+/g, " ").trim(); return a === "under 21" || a === "under21"; };
+    const isStudentRow = r => STUD.has(r.prof) || (!inAny(r) && isU21(r));
+    const rest  = rows => rows.filter(r => !inAny(r) && !isU21(r));
+    const pickBy = pred => [].concat(mainK.filter(pred), btK.filter(pred), ex.filter(pred), bc.filter(pred));
+    const pick  = (S) => pickBy(r => S.has(r.prof));
 
     const sheets = {
-      "Main": rest(mainRows), "Bootcamp Paid": rest(btRows),
+      "Main": rest(mainK), "Bootcamp Paid": rest(btK),
       "Exotic": rest(ex), "Bootcamp": rest(bc),
-      "Student": pick(STUD), "Business": pick(BUS), "Educator": pick(EDU),
-      "Finance": pick(FIN), "Freelancer & Unemployed": pick(FRUN)
+      "Student": pickBy(isStudentRow), "Business": pick(BUS), "Educator": pick(EDU),
+      "Finance": pick(FIN), "Freelancer & Unemployed": pick(FRUN), "IT": pick(IT)
     };
     return {
       sheets,
       stats: {
         inputs: { main: mainRows.length, btPaid: btRows.length, exotic: exAll.length, bootcamp: bcAll.length },
-        dupesRemoved: { exotic: exAll.length - ex.length, bootcamp: bcAll.length - bc.length },
+        dupesRemoved: { exotic: exAll.length - ex.length, bootcamp: bcAll.length - bc.length,
+                        paid: (mainAll.length - mainK.length) + (btAll.length - btK.length) },
         counts: Object.fromEntries(Object.entries(sheets).map(([k, v]) => [k, v.length]))
       }
     };
@@ -476,7 +485,7 @@
 
   function toWorkbook(XLSX, result) {
     const wb = XLSX.utils.book_new();
-    ["Main","Bootcamp Paid","Exotic","Bootcamp","Student","Business","Educator","Finance","Freelancer & Unemployed"]
+    ["Main","Bootcamp Paid","Exotic","Bootcamp","Student","Business","Educator","Finance","Freelancer & Unemployed","IT"]
       .forEach(name => XLSX.utils.book_append_sheet(wb, sheetFromRows(XLSX, result.sheets[name]), name));
     return wb;
   }
@@ -738,7 +747,9 @@ ringBtn.addEventListener("click", () => {
         `<tr class="total"><td>TOTAL</td><td class="num">${total.toLocaleString("en-IN")}</td></tr>`;
       const d = result.stats.dupesRemoved;
       $("#dupeLine").textContent =
-        `Cast into the fire: already-paid duplicates · Exotic ${d.exotic} · Bootcamp ${d.bootcamp} (matched by phone or email against Main + BT Paid).`;
+        `Cast into the fire: already-paid duplicates · Exotic ${d.exotic} · Bootcamp ${d.bootcamp}` +
+        (d.paid ? ` · Paid overlap removed: ${d.paid}` : ``) +
+        ` (matched by phone or email, priority Main, BT Paid, Exotic, Bootcamp).`;
       setTimeout(() => { document.body.classList.add("done"); setStatus("It is done.", "ok"); }, 550);
     } catch (e) {
       document.body.classList.remove("casting");
