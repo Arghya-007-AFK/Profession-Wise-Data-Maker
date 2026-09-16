@@ -437,10 +437,11 @@
     const exAll = buildLeadRows(exoticAoa, "Exotic");
     const bcAll = buildLeadRows(bootcampAoa, "Bootcamp");
     const mainAll = mainRows, btAll = btRows;
-    const mainK = mainAll.filter(keepRow);
+    // priority: BT Paid, then Main, then Bootcamp, then Exotic
     const btK   = btAll.filter(keepRow);
-    const ex = exAll.filter(keepRow);
+    const mainK = mainAll.filter(keepRow);
     const bc = bcAll.filter(keepRow);
+    const ex = exAll.filter(keepRow);
 
     const inAny = r => STUD.has(r.prof) || BUS.has(r.prof) || EDU.has(r.prof) || FIN.has(r.prof) || FRUN.has(r.prof) || IT.has(r.prof);
     const isU21 = r => { const a = (r.age || "").toLowerCase().replace(/[_\s]+/g, " ").trim(); return a === "under 21" || a === "under21"; };
@@ -617,7 +618,8 @@
       });
     }
     rows.sort((a, b) => a.ts - b.ts || a.ord - b.ord);
-    const kept = onePass(rows, "pn", "email");
+    // Bootcamp leads outrank Exotic: a person present in both stays in Bootcamp
+    const kept = onePass(rows.filter(r => r.isbc).concat(rows.filter(r => !r.isbc)), "pn", "email");
     const header = ["Date Created","Day","name","email","phone_number","country_code","without country code","current_profession","experience_in_years","age_group","form_id.slug","Platform"];
     return {
       exAoa: [header, ...kept.filter(r => !r.isbc).map(r => r.out)],
