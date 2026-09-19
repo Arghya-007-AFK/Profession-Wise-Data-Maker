@@ -349,6 +349,7 @@
   const FIN  = new Set(["Finance / Banking / Insurance","opt_finance_banking_insurance"]);
   const FRUN = new Set(["Freelancer / Consultant","Unemployed","opt_freelancer","opt_unemployed"]);
   const IT   = new Set(["IT / Software","opt_it_software","opt_it_software_data"]);
+  const OPS  = new Set(["Operations / Manufacturing","opt_operations_manufacturing"]);
   const DOW  = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
   const norm = v => (v === null || v === undefined) ? "" : String(v).trim();
@@ -443,7 +444,7 @@
     const bc = bcAll.filter(keepRow);
     const ex = exAll.filter(keepRow);
 
-    const inAny = r => STUD.has(r.prof) || BUS.has(r.prof) || EDU.has(r.prof) || FIN.has(r.prof) || FRUN.has(r.prof) || IT.has(r.prof);
+    const inAny = r => STUD.has(r.prof) || BUS.has(r.prof) || EDU.has(r.prof) || FIN.has(r.prof) || FRUN.has(r.prof) || IT.has(r.prof) || OPS.has(r.prof);
     const isU21 = r => { const a = (r.age || "").toLowerCase().replace(/[_\s]+/g, " ").trim(); return a === "under 21" || a === "under21"; };
     const isStudentRow = r => STUD.has(r.prof) || (!inAny(r) && isU21(r));
     const rest  = rows => rows.filter(r => !inAny(r) && !isU21(r));
@@ -454,7 +455,7 @@
       "Main": rest(mainK), "Bootcamp Paid": rest(btK),
       "Exotic": rest(ex), "Bootcamp": rest(bc),
       "Student": pickBy(isStudentRow), "Business": pick(BUS), "Educator": pick(EDU),
-      "Finance": pick(FIN), "Freelancer & Unemployed": pick(FRUN), "IT": pick(IT)
+      "Finance": pick(FIN), "Freelancer & Unemployed": pick(FRUN), "IT": pick(IT), "Operations": pick(OPS)
     };
     return {
       sheets,
@@ -486,7 +487,7 @@
 
   function toWorkbook(XLSX, result) {
     const wb = XLSX.utils.book_new();
-    ["Main","Bootcamp Paid","Exotic","Bootcamp","Student","Business","Educator","Finance","Freelancer & Unemployed","IT"]
+    ["Main","Bootcamp Paid","Exotic","Bootcamp","Student","Business","Educator","Finance","Freelancer & Unemployed","IT","Operations"]
       .forEach(name => XLSX.utils.book_append_sheet(wb, sheetFromRows(XLSX, result.sheets[name]), name));
     return wb;
   }
