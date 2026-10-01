@@ -376,6 +376,27 @@
   }
   const blankRow = row => !row || row.every(c => norm(c) === "");
 
+  const PROF_MAP = {
+    opt_arts_media_creative_professional: "Arts / Media / Creative Professional",
+    opt_business_owner: "Business Owner / Entrepreneur",
+    opt_student: "Currently Student",
+    opt_data: "Data",
+    opt_educator_teacher: "Educator / Teacher",
+    opt_finance_banking_insurance: "Finance / Banking / Insurance",
+    opt_freelancer: "Freelancer / Consultant",
+    opt_govt_defence_professional: "Govt /Defence Professional",
+    opt_healthcare: "Healthcare",
+    opt_hr: "HR",
+    opt_it_software: "IT / Software",
+    opt_it_software_data: "IT / Software",
+    opt_marketing: "Marketing",
+    opt_operations_manufacturing: "Operations / Manufacturing",
+    opt_other: "Other",
+    opt_sales: "Sales",
+    opt_unemployed: "Unemployed"
+  };
+  const mapProf = v => { const t = norm(v); if (!t) return "--"; return PROF_MAP[t] !== undefined ? PROF_MAP[t] : t; };
+
   function buildPaidRows(aoa, lead) {
     const H = headerIndex(aoa[0]); const out = [];
     const g = (row, h) => (H[h] !== undefined && row[H[h]] !== undefined) ? row[H[h]] : "";
@@ -388,12 +409,12 @@
           p ? dayLabel(p) : "",
           g(row, "name"), g(row, "email"),
           toNum(g(row, "phoneNumber")), toNum(g(row, "country_code")), toNum(g(row, "without country code")),
-          toAmt(g(row, "Amount")), g(row, "AgeGroup"), g(row, "Profession (PG)"),
+          toAmt(g(row, "Amount")), g(row, "AgeGroup"), mapProf(g(row, "Profession (PG)")),
           "NA", g(row, "paymentSlug"), "NA", lead
         ],
         phone: norm(g(row, "phoneNumber")),
         email: norm(g(row, "email")).toLowerCase(),
-        prof:  norm(g(row, "Profession (PG)")),
+        prof:  mapProf(g(row, "Profession (PG)")),
         age:   norm(g(row, "AgeGroup"))
       });
     }
@@ -411,12 +432,12 @@
           pd ? { date: true, v: excelSerial(pd) } : norm(g(row, "Date Created")), g(row, "Day"),
           g(row, "name"), g(row, "email"),
           toNum(g(row, "phone_number")), toNum(g(row, "country_code")), toNum(g(row, "without country code")),
-          "NA", g(row, "age_group"), g(row, "current_profession"),
+          "NA", g(row, "age_group"), mapProf(g(row, "current_profession")),
           g(row, "experience_in_years"), g(row, "form_id.slug"), g(row, "Platform"), lead
         ],
         phone: norm(g(row, "phone_number")),
         email: norm(g(row, "email")).toLowerCase(),
-        prof:  norm(g(row, "current_profession")),
+        prof:  mapProf(g(row, "current_profession")),
         age:   norm(g(row, "age_group"))
       });
     }
@@ -455,7 +476,7 @@
       "Main": rest(mainK), "Bootcamp Paid": rest(btK),
       "Exotic": rest(ex), "Bootcamp": rest(bc),
       "Student": pickBy(isStudentRow), "Business": pick(BUS), "Educator": pick(EDU),
-      "Finance": pick(FIN), "Freelancer & Unemployed": pick(FRUN), "IT": pick(IT), "Operations": pick(OPS)
+      "Finance": pick(FIN), "BSAI": pick(FRUN), "IT": pick(IT), "Operations": pick(OPS)
     };
     return {
       sheets,
@@ -487,7 +508,7 @@
 
   function toWorkbook(XLSX, result) {
     const wb = XLSX.utils.book_new();
-    ["Main","Bootcamp Paid","Exotic","Bootcamp","Student","Business","Educator","Finance","Freelancer & Unemployed","IT","Operations"]
+    ["Main","Bootcamp Paid","Exotic","Bootcamp","Student","Business","Educator","Finance","BSAI","IT","Operations"]
       .forEach(name => XLSX.utils.book_append_sheet(wb, sheetFromRows(XLSX, result.sheets[name]), name));
     return wb;
   }
